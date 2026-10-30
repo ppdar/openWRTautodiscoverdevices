@@ -16,7 +16,7 @@ return baseclass.extend({
 	render: function(file_content) {
 		var current_time = Math.floor(Date.now() / 1000);
 		var parsed_peers = {};
-		
+
 		// Safely extract the router IP/hostname you are currently logged into
 		var local_router_ip = window.location.hostname || '';
 
@@ -44,7 +44,7 @@ return baseclass.extend({
 			}
 		}
 
-		// Assembly array mimicking the network-status-table components from your wireless sample
+		// Assemble presentation data
 		var table_rows = [
 			E('tr', { 'class': 'tr table-titles' }, [
 				E('th', { 'class': 'th' }, _('Hostname')),
@@ -62,7 +62,7 @@ return baseclass.extend({
 			peer_ips.forEach(function(ip) {
 				var device_name = parsed_peers[ip].hostname || '?';
 				var hostname_link = E('a', { 'href': 'http://' + ip, 'target': '_blank', 'style': 'font-weight: bold;' }, device_name);
-				
+
 				// Format the IP label line and append an asterisk if it matches the current active system
 				var ip_display = ip;
 				if (ip === local_router_ip) {
