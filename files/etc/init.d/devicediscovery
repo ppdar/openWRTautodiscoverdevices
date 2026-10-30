@@ -1,0 +1,40 @@
+#!/bin/sh /etc/rc.common
+
+# Execution priority order relative to other boot items
+START=95
+STOP=10
+
+USE_PROCD=1
+PROG="/usr/sbin/devicediscovery.uc"
+
+start_service() {
+    # 1. Dependency Validation Check
+    if [ ! -f "$PROG" ]; then
+        logger -t devicediscovery.uc "Error: Daemon executable not found at $PROG"
+        exit 1
+    fi
+
+    # 2. Spawn the process inside the procd sandbox tracker
+    procd_open_instance "main"
+    
+    # Absolute path to the Lua binary and its target script argument
+    procd_set_param command /usr/bin/lua "$PROG"
+    
+    # Inject system binary environment path so the script can execute 'ip route' successfully
+    procd_set_param env PATH="/usr/sbin:/usr/bin:/sbin:/bin"
+    
+    # Automatically restart the service within 5 seconds if it dies unexpectedly
+    procd_set_param respawn ${respawn_threshold:-3600} ${respawn_timeout:-5} ${respawn_retry:-5}
+    
+    # Redirect standard input/error straight into logread/syslog
+    procd_set_param stdout 1
+    procd_set_param stderr 1
+    
+    # Terminate process limits gracefully upon shutdown sequences
+    procd_close_instance
+}
+
+stop_service() {
+    # Clean up the temporary state file node upon shutdown
+    rm -f /tmp/mcast_live.txt
+}

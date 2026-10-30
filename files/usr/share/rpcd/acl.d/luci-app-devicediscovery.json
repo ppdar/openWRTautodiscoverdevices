@@ -1,0 +1,10 @@
+{
+	"luci-app-devicediscovery": {
+		"description": "Grant devicediscovery.js widget file read privileges in LUCI",
+		"read": {
+			"file": {
+				"/tmp/mcast_live.txt": [ "read" ]
+			}
+		}
+	}
+}
